@@ -1,0 +1,68 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# JS Sourcemaps
+*.js.map
+
+# Dependencies
+node_modules/
+bower_components/
+
+# Build output
+dist
+
+# Web server
+frontend/server/dist
+
+# Python built package
+*.egg-info
+dist
+.tox
+
+# UI test outputs
+frontend/test/ui/visual-regression/errorShots
+frontend/test/ui/visual-regression/screenshots/diff
+frontend/test/ui/visual-regression/screenshots/screen
+
+# sqlite db
+*.db
+
+# IDE
+.idea/
+.ijwb/
+*.iml
+
+# Merge files
+*.orig
+
+*.pyc
+.DS_Store
+build
+
+.ipynb_checkpoints
+*.egg-info
+
+# go vendor
+vendor
+
+# Go module cache
+backend/pkg/mod/cache
+
+# Bazel output artifacts
+bazel-*
+
+# VSCode
+.vscode
+
+# test yaml
+sdk/python/tests/compiler/pipeline.yaml
+sdk/python/tests/compiler/testdata/testpackage/pipeline.yaml
+
+# Test temporary files
+_artifacts
+
+# Generated Python SDK documentation
+docs/_build
+
