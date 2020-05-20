@@ -1,2 +1,3 @@
-# -kfp-tekton-backend
-Kubeflow pipelines Tekton backend
+# Kubeflow Pipelines Backend for Tekton
+
+Kubeflow Pipelines backend for Tekton.
