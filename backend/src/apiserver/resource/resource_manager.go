@@ -19,8 +19,6 @@ import (
 	"fmt"
 	"strconv"
 
-	// workflowapi "github.com/argoproj/argo/pkg/apis/workflow/v1alpha1"
-	// workflowclient "github.com/argoproj/argo/pkg/client/clientset/versioned/typed/workflow/v1alpha1"
 	"github.com/cenkalti/backoff"
 	"github.com/golang/glog"
 	api "github.com/kubeflow/pipelines/backend/api/go_client"
@@ -56,7 +54,6 @@ type ClientManagerInterface interface {
 	DBStatusStore() storage.DBStatusStoreInterface
 	DefaultExperimentStore() storage.DefaultExperimentStoreInterface
 	ObjectStore() storage.ObjectStoreInterface
-	// ArgoClient() client.ArgoClientInterface
 	TektonClient() client.TektonClientInterface
 	SwfClient() client.SwfClientInterface
 	KubernetesCoreClient() client.KubernetesCoreInterface
@@ -74,13 +71,12 @@ type ResourceManager struct {
 	dBStatusStore          storage.DBStatusStoreInterface
 	defaultExperimentStore storage.DefaultExperimentStoreInterface
 	objectStore            storage.ObjectStoreInterface
-	// argoClient             client.ArgoClientInterface
-	tektonClient  client.TektonClientInterface
-	swfClient     client.SwfClientInterface
-	k8sCoreClient client.KubernetesCoreInterface
-	kfamClient    client.KFAMClientInterface
-	time          util.TimeInterface
-	uuid          util.UUIDGeneratorInterface
+	tektonClient           client.TektonClientInterface
+	swfClient              client.SwfClientInterface
+	k8sCoreClient          client.KubernetesCoreInterface
+	kfamClient             client.KFAMClientInterface
+	time                   util.TimeInterface
+	uuid                   util.UUIDGeneratorInterface
 }
 
 func NewResourceManager(clientManager ClientManagerInterface) *ResourceManager {
@@ -93,19 +89,14 @@ func NewResourceManager(clientManager ClientManagerInterface) *ResourceManager {
 		dBStatusStore:          clientManager.DBStatusStore(),
 		defaultExperimentStore: clientManager.DefaultExperimentStore(),
 		objectStore:            clientManager.ObjectStore(),
-		// argoClient:             clientManager.ArgoClient(),
-		tektonClient:  clientManager.TektonClient(),
-		swfClient:     clientManager.SwfClient(),
-		k8sCoreClient: clientManager.KubernetesCoreClient(),
-		kfamClient:    clientManager.KFAMClient(),
-		time:          clientManager.Time(),
-		uuid:          clientManager.UUID(),
+		tektonClient:           clientManager.TektonClient(),
+		swfClient:              clientManager.SwfClient(),
+		k8sCoreClient:          clientManager.KubernetesCoreClient(),
+		kfamClient:             clientManager.KFAMClient(),
+		time:                   clientManager.Time(),
+		uuid:                   clientManager.UUID(),
 	}
 }
-
-// func (r *ResourceManager) getWorkflowClient(namespace string) workflowclient.WorkflowInterface {
-// 	return r.argoClient.Workflow(namespace)
-// }
 
 func (r *ResourceManager) getWorkflowClient(namespace string) workflowclient.PipelineRunInterface {
 	return r.tektonClient.PipelineRun(namespace)
@@ -367,6 +358,9 @@ func (r *ResourceManager) CreateRun(apiRun *api.Run) (*model.RunDetail, error) {
 
 	// Marking auto-added artifacts as optional. Otherwise most older workflows will start failing after upgrade to Argo 2.3.
 	// TODO: Fix the components to explicitly declare the artifacts they really output.
+
+	// The below section does not support in Tekton because Tekton doesn't have the concept of artifact in its API.
+
 	// for templateIdx, template := range workflow.Workflow.Spec.Templates {
 	// 	for artIdx, artifact := range template.Outputs.Artifacts {
 	// 		if artifact.Name == "mlpipeline-ui-metadata" || artifact.Name == "mlpipeline-metrics" {
@@ -615,6 +609,9 @@ func (r *ResourceManager) CreateJob(apiJob *api.Job) (*model.Job, error) {
 	}
 
 	// Marking auto-added artifacts as optional. Otherwise most older workflows will start failing after upgrade to Argo 2.3.
+
+	// The below section does not support in Tekton because Tekton doesn't have the concept of artifact in its API.
+
 	// TODO: Fix the components to explicitly declare the artifacts they really output.
 	// for templateIdx, template := range scheduledWorkflow.Spec.Workflow.Spec.Templates {
 	// 	for artIdx, artifact := range template.Outputs.Artifacts {

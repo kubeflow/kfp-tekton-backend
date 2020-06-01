@@ -15,7 +15,6 @@
 package client
 
 import (
-	// "github.com/argoproj/argo/pkg/client/informers/externalversions/workflow/v1alpha1"
 	"github.com/kubeflow/pipelines/backend/src/common/util"
 	"github.com/tektoncd/pipeline/pkg/client/informers/externalversions/pipeline/v1beta1"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
