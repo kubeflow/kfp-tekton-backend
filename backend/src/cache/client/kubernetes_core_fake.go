@@ -14,34 +14,34 @@
 
 package client
 
-// import (
-// 	"github.com/kubeflow/pipelines/backend/src/common/util"
-// 	v1 "k8s.io/client-go/kubernetes/typed/core/v1"
-// )
+import (
+	"github.com/kubeflow/pipelines/backend/src/common/util"
+	v1 "k8s.io/client-go/kubernetes/typed/core/v1"
+)
 
-// type FakeKuberneteCoreClient struct {
-// 	podClientFake *FakePodClient
-// }
+type FakeKuberneteCoreClient struct {
+	podClientFake *FakePodClient
+}
 
-// func (c *FakeKuberneteCoreClient) PodClient(namespace string) v1.PodInterface {
-// 	if len(namespace) == 0 {
-// 		panic(util.NewResourceNotFoundError("Namespace", namespace))
-// 	}
-// 	return c.podClientFake
-// }
+func (c *FakeKuberneteCoreClient) PodClient(namespace string) v1.PodInterface {
+	if len(namespace) == 0 {
+		panic(util.NewResourceNotFoundError("Namespace", namespace))
+	}
+	return c.podClientFake
+}
 
-// func NewFakeKuberneteCoresClient() *FakeKuberneteCoreClient {
-// 	return &FakeKuberneteCoreClient{&FakePodClient{}}
-// }
+func NewFakeKuberneteCoresClient() *FakeKuberneteCoreClient {
+	return &FakeKuberneteCoreClient{&FakePodClient{}}
+}
 
-// type FakeKubernetesCoreClientWithBadPodClient struct {
-// 	podClientFake *FakeBadPodClient
-// }
+type FakeKubernetesCoreClientWithBadPodClient struct {
+	podClientFake *FakeBadPodClient
+}
 
-// func NewFakeKubernetesCoreClientWithBadPodClient() *FakeKubernetesCoreClientWithBadPodClient {
-// 	return &FakeKubernetesCoreClientWithBadPodClient{&FakeBadPodClient{}}
-// }
+func NewFakeKubernetesCoreClientWithBadPodClient() *FakeKubernetesCoreClientWithBadPodClient {
+	return &FakeKubernetesCoreClientWithBadPodClient{&FakeBadPodClient{}}
+}
 
-// func (c *FakeKubernetesCoreClientWithBadPodClient) PodClient(namespace string) v1.PodInterface {
-// 	return c.podClientFake
-// }
+func (c *FakeKubernetesCoreClientWithBadPodClient) PodClient(namespace string) v1.PodInterface {
+	return c.podClientFake
+}

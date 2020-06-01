@@ -14,62 +14,62 @@
 
 package server
 
-// import (
-// 	"github.com/golang/glog"
-// 	"github.com/kubeflow/pipelines/backend/src/cache/client"
-// 	"github.com/kubeflow/pipelines/backend/src/cache/storage"
-// 	"github.com/kubeflow/pipelines/backend/src/common/util"
-// )
+import (
+	"github.com/golang/glog"
+	"github.com/kubeflow/pipelines/backend/src/cache/client"
+	"github.com/kubeflow/pipelines/backend/src/cache/storage"
+	"github.com/kubeflow/pipelines/backend/src/common/util"
+)
 
-// type FakeClientManager struct {
-// 	db                *storage.DB
-// 	cacheStore        storage.ExecutionCacheStoreInterface
-// 	k8sCoreClientFake *client.FakeKuberneteCoreClient
-// 	time              util.TimeInterface
-// }
+type FakeClientManager struct {
+	db                *storage.DB
+	cacheStore        storage.ExecutionCacheStoreInterface
+	k8sCoreClientFake *client.FakeKuberneteCoreClient
+	time              util.TimeInterface
+}
 
-// func NewFakeClientManager(time util.TimeInterface) (*FakeClientManager, error) {
-// 	if time == nil {
-// 		glog.Fatalf("The time parameter must not be null.") // Must never happen
-// 	}
-// 	// Initialize GORM
-// 	db, err := storage.NewFakeDb()
-// 	if err != nil {
-// 		return nil, err
-// 	}
+func NewFakeClientManager(time util.TimeInterface) (*FakeClientManager, error) {
+	if time == nil {
+		glog.Fatalf("The time parameter must not be null.") // Must never happen
+	}
+	// Initialize GORM
+	db, err := storage.NewFakeDb()
+	if err != nil {
+		return nil, err
+	}
 
-// 	return &FakeClientManager{
-// 		db:                db,
-// 		cacheStore:        storage.NewExecutionCacheStore(db, time),
-// 		k8sCoreClientFake: client.NewFakeKuberneteCoresClient(),
-// 		time:              time,
-// 	}, nil
-// }
+	return &FakeClientManager{
+		db:                db,
+		cacheStore:        storage.NewExecutionCacheStore(db, time),
+		k8sCoreClientFake: client.NewFakeKuberneteCoresClient(),
+		time:              time,
+	}, nil
+}
 
-// func NewFakeClientManagerOrFatal(time util.TimeInterface) *FakeClientManager {
-// 	fakeStore, err := NewFakeClientManager(time)
-// 	if err != nil {
-// 		glog.Fatal("The fake store doesn't create successfully. Fail fast.")
-// 	}
-// 	return fakeStore
-// }
+func NewFakeClientManagerOrFatal(time util.TimeInterface) *FakeClientManager {
+	fakeStore, err := NewFakeClientManager(time)
+	if err != nil {
+		glog.Fatal("The fake store doesn't create successfully. Fail fast.")
+	}
+	return fakeStore
+}
 
-// func (f *FakeClientManager) CacheStore() storage.ExecutionCacheStoreInterface {
-// 	return f.cacheStore
-// }
+func (f *FakeClientManager) CacheStore() storage.ExecutionCacheStoreInterface {
+	return f.cacheStore
+}
 
-// func (f *FakeClientManager) Time() util.TimeInterface {
-// 	return f.time
-// }
+func (f *FakeClientManager) Time() util.TimeInterface {
+	return f.time
+}
 
-// func (f *FakeClientManager) DB() *storage.DB {
-// 	return f.db
-// }
+func (f *FakeClientManager) DB() *storage.DB {
+	return f.db
+}
 
-// func (f *FakeClientManager) Close() error {
-// 	return f.db.Close()
-// }
+func (f *FakeClientManager) Close() error {
+	return f.db.Close()
+}
 
-// func (f *FakeClientManager) KubernetesCoreClient() client.KubernetesCoreInterface {
-// 	return f.k8sCoreClientFake
-// }
+func (f *FakeClientManager) KubernetesCoreClient() client.KubernetesCoreInterface {
+	return f.k8sCoreClientFake
+}
