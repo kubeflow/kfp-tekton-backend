@@ -19,8 +19,8 @@ import (
 	"fmt"
 	"strconv"
 
-	workflowapi "github.com/argoproj/argo/pkg/apis/workflow/v1alpha1"
-	workflowclient "github.com/argoproj/argo/pkg/client/clientset/versioned/typed/workflow/v1alpha1"
+	// workflowapi "github.com/argoproj/argo/pkg/apis/workflow/v1alpha1"
+	// workflowclient "github.com/argoproj/argo/pkg/client/clientset/versioned/typed/workflow/v1alpha1"
 	"github.com/cenkalti/backoff"
 	"github.com/golang/glog"
 	api "github.com/kubeflow/pipelines/backend/api/go_client"
@@ -33,6 +33,8 @@ import (
 	scheduledworkflow "github.com/kubeflow/pipelines/backend/src/crd/pkg/apis/scheduledworkflow/v1beta1"
 	scheduledworkflowclient "github.com/kubeflow/pipelines/backend/src/crd/pkg/client/clientset/versioned/typed/scheduledworkflow/v1beta1"
 	"github.com/pkg/errors"
+	workflowapi "github.com/tektoncd/pipeline/pkg/apis/pipeline/v1beta1"
+	workflowclient "github.com/tektoncd/pipeline/pkg/client/clientset/versioned/typed/pipeline/v1beta1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"k8s.io/apimachinery/pkg/types"
@@ -54,7 +56,8 @@ type ClientManagerInterface interface {
 	DBStatusStore() storage.DBStatusStoreInterface
 	DefaultExperimentStore() storage.DefaultExperimentStoreInterface
 	ObjectStore() storage.ObjectStoreInterface
-	ArgoClient() client.ArgoClientInterface
+	// ArgoClient() client.ArgoClientInterface
+	TektonClient() client.TektonClientInterface
 	SwfClient() client.SwfClientInterface
 	KubernetesCoreClient() client.KubernetesCoreInterface
 	KFAMClient() client.KFAMClientInterface
@@ -71,12 +74,13 @@ type ResourceManager struct {
 	dBStatusStore          storage.DBStatusStoreInterface
 	defaultExperimentStore storage.DefaultExperimentStoreInterface
 	objectStore            storage.ObjectStoreInterface
-	argoClient             client.ArgoClientInterface
-	swfClient              client.SwfClientInterface
-	k8sCoreClient          client.KubernetesCoreInterface
-	kfamClient             client.KFAMClientInterface
-	time                   util.TimeInterface
-	uuid                   util.UUIDGeneratorInterface
+	// argoClient             client.ArgoClientInterface
+	tektonClient  client.TektonClientInterface
+	swfClient     client.SwfClientInterface
+	k8sCoreClient client.KubernetesCoreInterface
+	kfamClient    client.KFAMClientInterface
+	time          util.TimeInterface
+	uuid          util.UUIDGeneratorInterface
 }
 
 func NewResourceManager(clientManager ClientManagerInterface) *ResourceManager {
@@ -89,17 +93,22 @@ func NewResourceManager(clientManager ClientManagerInterface) *ResourceManager {
 		dBStatusStore:          clientManager.DBStatusStore(),
 		defaultExperimentStore: clientManager.DefaultExperimentStore(),
 		objectStore:            clientManager.ObjectStore(),
-		argoClient:             clientManager.ArgoClient(),
-		swfClient:              clientManager.SwfClient(),
-		k8sCoreClient:          clientManager.KubernetesCoreClient(),
-		kfamClient:             clientManager.KFAMClient(),
-		time:                   clientManager.Time(),
-		uuid:                   clientManager.UUID(),
+		// argoClient:             clientManager.ArgoClient(),
+		tektonClient:  clientManager.TektonClient(),
+		swfClient:     clientManager.SwfClient(),
+		k8sCoreClient: clientManager.KubernetesCoreClient(),
+		kfamClient:    clientManager.KFAMClient(),
+		time:          clientManager.Time(),
+		uuid:          clientManager.UUID(),
 	}
 }
 
-func (r *ResourceManager) getWorkflowClient(namespace string) workflowclient.WorkflowInterface {
-	return r.argoClient.Workflow(namespace)
+// func (r *ResourceManager) getWorkflowClient(namespace string) workflowclient.WorkflowInterface {
+// 	return r.argoClient.Workflow(namespace)
+// }
+
+func (r *ResourceManager) getWorkflowClient(namespace string) workflowclient.PipelineRunInterface {
+	return r.tektonClient.PipelineRun(namespace)
 }
 
 func (r *ResourceManager) getScheduledWorkflowClient(namespace string) scheduledworkflowclient.ScheduledWorkflowInterface {
@@ -354,15 +363,17 @@ func (r *ResourceManager) CreateRun(apiRun *api.Run) (*model.RunDetail, error) {
 		return nil, util.NewInternalServerError(err, "Failed to replace workflow ID")
 	}
 
+	workflow.Name = workflow.Name + "-" + runId[0:5]
+
 	// Marking auto-added artifacts as optional. Otherwise most older workflows will start failing after upgrade to Argo 2.3.
 	// TODO: Fix the components to explicitly declare the artifacts they really output.
-	for templateIdx, template := range workflow.Workflow.Spec.Templates {
-		for artIdx, artifact := range template.Outputs.Artifacts {
-			if artifact.Name == "mlpipeline-ui-metadata" || artifact.Name == "mlpipeline-metrics" {
-				workflow.Workflow.Spec.Templates[templateIdx].Outputs.Artifacts[artIdx].Optional = true
-			}
-		}
-	}
+	// for templateIdx, template := range workflow.Workflow.Spec.Templates {
+	// 	for artIdx, artifact := range template.Outputs.Artifacts {
+	// 		if artifact.Name == "mlpipeline-ui-metadata" || artifact.Name == "mlpipeline-metrics" {
+	// 			workflow.Workflow.Spec.Templates[templateIdx].Outputs.Artifacts[artIdx].Optional = true
+	// 		}
+	// 	}
+	// }
 
 	// Add a reference to the default experiment if run does not already have a containing experiment
 	ref, err := r.getDefaultExperimentIfNoExperiment(apiRun.GetResourceReferences())
@@ -378,8 +389,10 @@ func (r *ResourceManager) CreateRun(apiRun *api.Run) (*model.RunDetail, error) {
 		return nil, err
 	}
 
-	// Create argo workflow CRD resource
+	// Create Tekton pipelineRun CRD resource
 	newWorkflow, err := r.getWorkflowClient(namespace).Create(workflow.Get())
+	wfs, _ := json.Marshal(newWorkflow)
+	glog.Infof(string(wfs))
 	if err != nil {
 		return nil, util.NewInternalServerError(err, "Failed to create a workflow for (%s)", workflow.Name)
 	}
@@ -440,7 +453,7 @@ func (r *ResourceManager) ListJobs(filterContext *common.FilterContext,
 }
 
 // TerminateWorkflow terminates a workflow by setting its activeDeadlineSeconds to 0
-func TerminateWorkflow(wfClient workflowclient.WorkflowInterface, name string) error {
+func TerminateWorkflow(wfClient workflowclient.PipelineRunInterface, name string) error {
 	patchObj := map[string]interface{}{
 		"spec": map[string]interface{}{
 			"activeDeadlineSeconds": 0,
@@ -516,7 +529,7 @@ func (r *ResourceManager) RetryRun(runId string) error {
 	if updateError != nil {
 		// Remove resource version
 		newWorkflow.ResourceVersion = ""
-		newCreatedWorkflow, createError := r.getWorkflowClient(namespace).Create(newWorkflow.Workflow)
+		newCreatedWorkflow, createError := r.getWorkflowClient(namespace).Create(newWorkflow.PipelineRun)
 		if createError != nil {
 			return util.NewInternalServerError(createError,
 				"Retry run failed. Failed to create or update the run. Update Error: %s, Create Error: %s",
@@ -539,7 +552,7 @@ func (r *ResourceManager) updateWorkflow(newWorkflow *util.Workflow, namespace s
 	}
 	// Update the workflow's resource version to latest.
 	newWorkflow.ResourceVersion = latestWorkflow.ResourceVersion
-	_, err = r.getWorkflowClient(namespace).Update(newWorkflow.Workflow)
+	_, err = r.getWorkflowClient(namespace).Update(newWorkflow.PipelineRun)
 	return err
 }
 
@@ -603,13 +616,13 @@ func (r *ResourceManager) CreateJob(apiJob *api.Job) (*model.Job, error) {
 
 	// Marking auto-added artifacts as optional. Otherwise most older workflows will start failing after upgrade to Argo 2.3.
 	// TODO: Fix the components to explicitly declare the artifacts they really output.
-	for templateIdx, template := range scheduledWorkflow.Spec.Workflow.Spec.Templates {
-		for artIdx, artifact := range template.Outputs.Artifacts {
-			if artifact.Name == "mlpipeline-ui-metadata" || artifact.Name == "mlpipeline-metrics" {
-				scheduledWorkflow.Spec.Workflow.Spec.Templates[templateIdx].Outputs.Artifacts[artIdx].Optional = true
-			}
-		}
-	}
+	// for templateIdx, template := range scheduledWorkflow.Spec.Workflow.Spec.Templates {
+	// 	for artIdx, artifact := range template.Outputs.Artifacts {
+	// 		if artifact.Name == "mlpipeline-ui-metadata" || artifact.Name == "mlpipeline-metrics" {
+	// 			scheduledWorkflow.Spec.Workflow.Spec.Templates[templateIdx].Outputs.Artifacts[artIdx].Optional = true
+	// 		}
+	// 	}
+	// }
 
 	// Add a reference to the default experiment if run does not already have a containing experiment
 	ref, err := r.getDefaultExperimentIfNoExperiment(apiJob.GetResourceReferences())
@@ -774,7 +787,7 @@ func (r *ResourceManager) ReportWorkflowResource(workflow *util.Workflow) error 
 }
 
 // AddWorkflowLabel add label for a workflow
-func AddWorkflowLabel(wfClient workflowclient.WorkflowInterface, name string, labelKey string, labelValue string) error {
+func AddWorkflowLabel(wfClient workflowclient.PipelineRunInterface, name string, labelKey string, labelValue string) error {
 	patchObj := map[string]interface{}{
 		"metadata": map[string]interface{}{
 			"labels": map[string]interface{}{
@@ -940,7 +953,7 @@ func (r *ResourceManager) ReadArtifact(runID string, nodeID string, artifactName
 	if err != nil {
 		return nil, err
 	}
-	var storageWorkflow workflowapi.Workflow
+	var storageWorkflow workflowapi.PipelineRun
 	err = json.Unmarshal([]byte(run.WorkflowRuntimeManifest), &storageWorkflow)
 	if err != nil {
 		// This should never happen.
