@@ -79,7 +79,8 @@ METADATA_WRITTEN_LABEL_KEY = 'pipelines.kubeflow.org/metadata_written'
 
 TEKTON_PIPELINERUN_LABEL_KEY = 'tekton.dev/pipelineRun'
 TEKTON_READY_ANNOTATION_KEY = 'tekton.dev/ready'
-TEKTON_TASKRUN_LABEL_KEY = 'tekton.dev/pipelineTask'
+TEKTON_TASKRUN_LABEL_KEY = 'tekton.dev/taskRun'
+TEKTON_PIPELINETASK_LABEL_KEY = 'tekton.dev/pipelineTask'
 TEKTON_INPUT_ARTIFACT_ANNOTATION_KEY = 'tekton.dev/input_artifacts'
 TEKTON_OUTPUT_ARTIFACT_ANNOTATION_KEY = 'tekton.dev/output_artifacts'
 
@@ -119,9 +120,9 @@ def get_component_template(obj):
     '''
     if PIPELINE_RUNTIME == "tekton":
         artifacts = json.loads(obj.metadata.annotations[TEKTON_INPUT_ARTIFACT_ANNOTATION_KEY])
-        results = artifacts.get(obj.metadata.labels[TEKTON_TASKRUN_LABEL_KEY], [])
+        results = artifacts.get(obj.metadata.labels[TEKTON_PIPELINETASK_LABEL_KEY], [])
         component_template = {
-            "name": obj.metadata.labels[TEKTON_TASKRUN_LABEL_KEY],
+            "name": obj.metadata.labels[TEKTON_PIPELINETASK_LABEL_KEY],
             "inputs": {
                 "artifacts": [
                     {
@@ -148,9 +149,9 @@ def get_output_template(obj):
     '''
     if PIPELINE_RUNTIME == "tekton":
         artifacts = json.loads(obj.metadata.annotations[TEKTON_OUTPUT_ARTIFACT_ANNOTATION_KEY])
-        results = artifacts.get(obj.metadata.labels[TEKTON_TASKRUN_LABEL_KEY], [])
+        results = artifacts.get(obj.metadata.labels[TEKTON_PIPELINETASK_LABEL_KEY], [])
         output_template = {
-            "name": obj.metadata.labels[TEKTON_TASKRUN_LABEL_KEY],
+            "name": obj.metadata.labels[TEKTON_PIPELINETASK_LABEL_KEY],
             "artifacts": [
                 {
                     "name": i["name"],
