@@ -9,6 +9,7 @@ bases:
 - mysql
 - cache
 - cache-deployer
+- tekton
 
 resources:
   - pipeline-application.yaml
