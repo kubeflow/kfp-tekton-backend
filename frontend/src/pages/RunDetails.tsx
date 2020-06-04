@@ -32,7 +32,6 @@ import { classes, stylesheet } from 'typestyle';
 import {
   NodePhase as ArgoNodePhase,
   NodeStatus,
-  Workflow,
 } from '../../third_party/argo-ui/argo_template';
 import { ApiExperiment } from '../apis/experiment';
 import { ApiRun, RunStorageState } from '../apis/run';
@@ -129,7 +128,7 @@ interface RunDetailsState {
   selectedNodeDetails: SelectedNodeDetails | null;
   sidepanelBusy: boolean;
   sidepanelSelectedTab: SidePaneTab;
-  workflow?: Workflow;
+  workflow?: any;
   mlmdRunContext?: Context;
   mlmdExecutions?: Execution[];
 }
@@ -324,14 +323,20 @@ class RunDetails extends Page<RunDetailsInternalProps, RunDetailsState> {
                                     : []),
                                 ]}
                                 selectedTab={sidepanelSelectedTab}
-                                onSwitch={this._loadSidePaneTab.bind(this)}
+                                onSwitch={(panelTab: number) => {
+                                  this.setStateSafe({
+                                    sidepanelSelectedTab: panelTab
+                                  })
+                                  this._loadSidePaneTab(panelTab)
+                                }}
                               />
 
                               <div
                                 data-testid='run-details-node-details'
                                 className={commonCss.page}
                               >
-                                {sidepanelSelectedTab === SidePaneTab.VISUALIZATIONS &&
+                                {/* Visualizations need work before being added back */}
+                                { false && sidepanelSelectedTab === SidePaneTab.VISUALIZATIONS &&
                                   this.state.selectedNodeDetails &&
                                   this.state.workflow && (
                                     <VisualizationsTabContent
@@ -340,7 +345,7 @@ class RunDetails extends Page<RunDetailsInternalProps, RunDetailsState> {
                                       nodeStatus={
                                         this.state.workflow && this.state.workflow.status
                                           ? this.state.workflow.status.nodes[
-                                              this.state.selectedNodeDetails.id
+                                              this.state.selectedNodeDetails!.id
                                             ]
                                           : undefined
                                       }
@@ -348,7 +353,7 @@ class RunDetails extends Page<RunDetailsInternalProps, RunDetailsState> {
                                       visualizationCreatorConfig={visualizationCreatorConfig}
                                       generatedVisualizations={this.state.generatedVisualizations.filter(
                                         visualization =>
-                                          visualization.nodeId === selectedNodeDetails.id,
+                                          visualization.nodeId === selectedNodeDetails!.id,
                                       )}
                                       onError={this.handleError}
                                     />
@@ -660,7 +665,7 @@ class RunDetails extends Page<RunDetailsInternalProps, RunDetailsState> {
 
       const workflow = JSON.parse(
         runDetail.pipeline_runtime!.workflow_manifest || '{}',
-      ) as Workflow;
+      );
 
       // Show workflow errors
       const workflowError = WorkflowParser.getWorkflowError(workflow);
@@ -699,11 +704,8 @@ class RunDetails extends Page<RunDetailsInternalProps, RunDetailsState> {
         }
       }
 
-      // Build runtime graph
-      const graph =
-        workflow && workflow.status && workflow.status.nodes
-          ? WorkflowParser.createRuntimeGraph(workflow)
-          : undefined;
+      let templateString = workflow;
+      const graph = WorkflowParser.createRuntimeGraph(templateString)
 
       const breadcrumbs: Array<{ displayName: string; href: string }> = [];
       // If this is an archived run, only show Archive in breadcrumbs, otherwise show
@@ -827,18 +829,18 @@ class RunDetails extends Page<RunDetailsInternalProps, RunDetailsState> {
     this.setStateSafe({ allArtifactConfigs });
   }
 
-  private _getDetailsFields(workflow: Workflow, runMetadata?: ApiRun): Array<KeyValue<string>> {
+  private _getDetailsFields(workflow: any, runMetadata?: ApiRun): Array<KeyValue<string>> {
     return !workflow.status
       ? []
       : [
-          ['Status', workflow.status.phase],
+          ['Status', workflow.status.conditions[0].reason],
           ['Description', runMetadata ? runMetadata!.description! : ''],
           [
             'Created at',
             workflow.metadata ? formatDateString(workflow.metadata.creationTimestamp) : '-',
           ],
-          ['Started at', formatDateString(workflow.status.startedAt)],
-          ['Finished at', formatDateString(workflow.status.finishedAt)],
+          ['Started at', formatDateString(workflow.status.startTime)],
+          ['Finished at', formatDateString(workflow.status.completionTime)],
           ['Duration', getRunDurationFromWorkflow(workflow)],
         ];
   }
@@ -853,12 +855,19 @@ class RunDetails extends Page<RunDetailsInternalProps, RunDetailsState> {
   private async _loadSidePaneTab(tab: SidePaneTab): Promise<void> {
     const workflow = this.state.workflow;
     const selectedNodeDetails = this.state.selectedNodeDetails;
-    if (workflow && workflow.status && workflow.status.nodes && selectedNodeDetails) {
-      const node = workflow.status.nodes[selectedNodeDetails.id];
-      if (node) {
+    if (workflow && workflow.status && workflow.status && selectedNodeDetails) {
+
+      let node : any;
+
+      for (const podName of Object.getOwnPropertyNames(workflow.status.taskRuns)) {
+        if (workflow.status.taskRuns[podName].status.podName === selectedNodeDetails.id) {
+          node = workflow.status.taskRuns[podName].status;
+        }
+      }
+      if (node && node.conditions[0].type !== 'Succeeded') {
         selectedNodeDetails.phaseMessage =
-          node && node.message
-            ? `This step is in ${node.phase} state with this message: ` + node.message
+          node && node.status
+            ? `This step is in ${node.status.conditions[0].type} state with this message: ` + node.status.conditions[0].message
             : undefined;
       }
       this.setStateSafe({ selectedNodeDetails, sidepanelSelectedTab: tab });

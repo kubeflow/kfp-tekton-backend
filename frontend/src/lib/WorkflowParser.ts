@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import MoreIcon from '@material-ui/icons/MoreHoriz';
 import * as dagre from 'dagre';
 import {
   NodeStatus,
@@ -22,13 +21,10 @@ import {
   S3Artifact,
   Workflow,
 } from '../../third_party/argo-ui/argo_template';
-import IconWithTooltip from '../atoms/IconWithTooltip';
-import { color } from '../Css';
 import { statusToIcon } from '../pages/Status';
 import { Constants } from './Constants';
 import { KeyValue } from './StaticGraphParser';
-import { hasFinished, NodePhase, statusToBgColor, parseNodePhase } from './StatusUtils';
-import { parseTaskDisplayName } from './ParserUtils';
+import { NodePhase, statusToBgColor } from './StatusUtils';
 import { isS3Endpoint } from './AwsHelper';
 
 export enum StorageService {
@@ -46,133 +42,160 @@ export interface StoragePath {
 }
 
 export default class WorkflowParser {
-  public static createRuntimeGraph(workflow: Workflow): dagre.graphlib.Graph {
-    const g = new dagre.graphlib.Graph();
-    g.setGraph({});
-    g.setDefaultEdgeLabel(() => ({}));
+  public static createRuntimeGraph(workflow: any): dagre.graphlib.Graph {
+    const graph = new dagre.graphlib.Graph();
+    graph.setGraph({});
+    graph.setDefaultEdgeLabel(() => ({}));
 
-    const PLACEHOLDER_NODE_DIMENSION = 28;
+    const tasks = workflow['spec']['pipelineSpec']['tasks'];
+    const status = workflow['status']['taskRuns'];
+    const pipelineParams = workflow['spec']['params'];
 
-    if (
-      !workflow ||
-      !workflow.status ||
-      !workflow.status.nodes ||
-      !workflow.metadata ||
-      !workflow.metadata.name
-    ) {
-      return g;
+
+    // Create a map from task name to status for every status received
+    const statusMap = new Map<string, any>();
+    for (const taskRunId of Object.getOwnPropertyNames(status)){
+      status[taskRunId]['taskRunId'] = taskRunId;
+      statusMap.set(status[taskRunId]['pipelineTaskName'], status[taskRunId]);
     }
 
-    const workflowNodes = workflow.status.nodes;
-    const workflowName = workflow.metadata.name || '';
+    for (const task of (tasks || [])) {
 
-    // Ensure that the exit handler nodes are appended to the graph.
-    // Uses the root node, so this needs to happen before we remove the root
-    // node below.
-    const onExitHandlerNodeId = Object.keys(workflowNodes).find(
-      id => workflowNodes[id].name === `${workflowName}.onExit`,
-    );
-    if (onExitHandlerNodeId) {
-      this.getOutboundNodes(workflow, workflowName).forEach(nodeId =>
-        g.setEdge(nodeId, onExitHandlerNodeId),
-      );
-    }
+      const conditions = task['conditions'];
+      const taskId = statusMap.get(task['name']) ? statusMap.get(task['name'])! ['status']['podName'] : task['name']
+      const edges : {parent: string, child: string}[] = [];
 
-    // If there are multiple steps, then remove the root node that Argo creates to manage the
-    // workflow to simplify the graph, otherwise leave it as otherwise there will be nothing to
-    // display.
-    if ((Object as any).values(workflowNodes).length > 1) {
-      delete workflowNodes[workflowName];
-    }
+      for (const condition of (conditions || [])) {
+        const condEdges : {parent: string, child: string}[] = [];
 
-    const runningNodeSuffix = '-running-placeholder';
+        // Checks that the status for this condition exists
+        for (const condParam of (condition['params'] || [])) {
 
-    // Create dagre graph nodes from workflow nodes.
-    (Object as any).values(workflowNodes).forEach((node: NodeStatus) => {
-      let nodeLabel = node.displayName || node.id;
-      if (node.name === `${workflowName}.onExit`) {
-        nodeLabel = `onExit - ${node.templateName}`;
+          let condParamValue = condParam['value'] || '';
+          const conditionDep = /^(\$\(tasks\.[^.]*)/.exec(condParam['value']);  // A regex for checking if the params are being passed from another task
+          // Checks if the parameters are passed from the pipeline parameters or task results
+          if (condParam['value'].substring(0,9) === '$(params.' && condParam['value'].substring(condParam['value'].length - 1) === ')') {
+            const paramName = condParam['value'].substring(9, condParam['value'].length - 1);
+            for (const pipelineParam of pipelineParams)
+              if (pipelineParam['name'] === paramName)
+                condParamValue = pipelineParam['value'];
+          }
+          else if (condParam['value'].substring(0, 2) === '$(' && condParam['value'].substring(condParam['value'].length - 1) === ')'){
+            const paramSplit = condParam['value'].split('.');
+            const parentTask = paramSplit[1];
+            const condParamName = paramSplit[paramSplit.length - 1].substring(0, paramSplit[paramSplit.length - 1].length - 1);
+
+            // If the task this condition depends on has no status then do not display this condition and task
+            if (statusMap.get(parentTask) && statusMap.get(parentTask)!['status']['conditions'][0]['type'] === 'Succeeded') {
+              const parentId = statusMap.get(parentTask)!['status']['podName'];
+              condEdges.push({parent: parentId, child: condition['conditionRef']});
+
+              // Add the taskResults value to the params value in status
+              for (const result of (statusMap.get(parentTask)!['status']['taskResults'] || []))
+                if (result['name'] === condParamName)
+                  condParamValue = result['value'];
+            }
+          }
+          // Find the same parameter in the status, otherwise assume it is not running
+          if (statusMap.get(task['name']))
+            for (const statusParam of statusMap.get(task['name'])!['status']['taskSpec']['params'])
+              if (statusParam['name'] === condParam['name'])
+                statusParam['value'] = condParamValue;
+        }
+
+        // If the condition has a status or is pending then add it and its edges to the graph
+        if (statusMap.get(condition['conditionRef'])) {
+
+          for (const condEdge of (condEdges || []))
+            graph.setEdge(condEdge['parent'], condEdge['child']);
+
+          const phase = this.getPhase(statusMap.get(condition['conditionRef']))
+          // Add a node for the Condition
+          graph.setNode(condition['conditionRef'], {
+            height: Constants.NODE_HEIGHT,
+            icon: statusToIcon(phase),
+            label: condition['conditionRef'],
+            statusColoring: statusToBgColor(phase, ''),
+            width: Constants.NODE_WIDTH,
+          });
+        }
+        else {
+          edges.push({parent: condition['conditionRef'], child: taskId});
+        }
       }
 
-      if (workflow.spec && workflow.spec.templates) {
-        const tmpl = workflow.spec.templates.find(
-          t => !!t && !!t.name && t.name === node.templateName,
-        );
-        nodeLabel = parseTaskDisplayName(tmpl?.metadata) || nodeLabel;
+      // Adds dependencies from task params
+      for (const param of (task['params'] || [])) {
+        let paramValue = param['value'] || '';
+
+        // Checks if the parameters are passed from the pipeline parameters or task results
+        if (param['value'].substring(0,9) === '$(params.' && param['value'].substring(param['value'].length - 1) === ')') {
+          const paramName = param['value'].substring(9, param['value'].length - 1);
+          for (const pipelineParam of pipelineParams)
+            if (pipelineParam['name'] === paramName)
+              paramValue = pipelineParam['value'];
+        }
+        else if (param['value'].substring(0, 2) === '$(' && param['value'].substring(param['value'].length - 1) === ')'){
+          const paramSplit = param['value'].split('.');
+          const parentTask = paramSplit[1];
+          const paramName = paramSplit[paramSplit.length - 1].substring(0, paramSplit[paramSplit.length - 1].length - 1);
+
+          if (statusMap.get(parentTask) && statusMap.get(parentTask)!['status']['conditions'][0]['type'] === 'Succeeded') {
+            const parentId = statusMap.get(parentTask)!['status']['podName'];
+            edges.push({parent: parentId, child: taskId});
+
+            // Add the taskResults value to the params value in status
+            for (const result of (statusMap.get(parentTask)!['status']['taskResults'] || [])){
+              if (result['name'] === paramName)
+                paramValue = result['value'];
+            }
+          }
+        }
+        // Find the output that matches this input and pull the value
+        if (statusMap.get(task['name']))
+          for (const statusParam of statusMap.get(task['name'])!['status']['taskSpec']['params'])
+            if (statusParam['name'] === param['name'])
+              statusParam['value'] = paramValue;
       }
 
-      g.setNode(node.id, {
-        height: Constants.NODE_HEIGHT,
-        icon: statusToIcon(parseNodePhase(node), node.startedAt, node.finishedAt, node.message),
-        label: nodeLabel,
-        statusColoring: statusToBgColor(node.phase as NodePhase, node.message),
-        width: Constants.NODE_WIDTH,
-        ...node,
-      });
-
-      if (!hasFinished(node.phase as NodePhase) && !this.isVirtual(node)) {
-        g.setNode(node.id + runningNodeSuffix, {
-          height: PLACEHOLDER_NODE_DIMENSION,
-          icon: IconWithTooltip({
-            Icon: MoreIcon,
-            height: 24,
-            iconColor: color.weak,
-            tooltip: 'More nodes may appear here',
-            width: 24,
-          }),
-          isPlaceholder: true,
-          width: PLACEHOLDER_NODE_DIMENSION,
-        });
-        g.setEdge(node.id, node.id + runningNodeSuffix, { color: color.weak, isPlaceholder: true });
-      }
-    });
-
-    // Connect dagre graph nodes with edges.
-    Object.keys(workflowNodes).forEach(nodeId => {
-      if (workflowNodes[nodeId].children) {
-        workflowNodes[nodeId].children.forEach(childNodeId => {
-          if (workflowNodes[childNodeId]) {
-            g.setEdge(nodeId, childNodeId);
+      if (task['taskSpec']['runAfter']) {
+        task['runAfter'].forEach((parentTask: any)=> {
+          if (statusMap.get(parentTask) && statusMap.get(parentTask)!['status']['conditions'][0]['type'] === 'Succeeded') {
+            const parentId = statusMap.get(parentTask)!['status']['podName'];
+            edges.push({parent: parentId, child: taskId});
           }
         });
       }
-    });
 
-    // Add BoundaryID edges. Only add these edges to nodes that don't already have inbound edges.
-    Object.keys(workflowNodes).forEach(nodeId => {
-      // Many nodes have the Argo root node as a boundaryID, and we can discard these.
-      if (
-        workflowNodes[nodeId].boundaryID &&
-        workflowNodes[workflowNodes[nodeId].boundaryID] &&
-        (!g.inEdges(nodeId) || !g.inEdges(nodeId)!.length) &&
-        workflowNodes[nodeId].boundaryID !== workflowName
-      ) {
-        // BoundaryIDs point from children to parents.
-        g.setEdge(workflowNodes[nodeId].boundaryID, nodeId);
-      }
-    });
+      // If the task has a status or is pending then add it and its edges to the graph
+      if (statusMap.get(task['name'])) {
+        for (const edge of (edges || []))
+          graph.setEdge(edge['parent'], edge['child']);
 
-    // Remove all virtual nodes
-    g.nodes().forEach(nodeId => {
-      if (workflowNodes[nodeId] && this.isVirtual(workflowNodes[nodeId])) {
-        const parents = (g.inEdges(nodeId) || []).map(edge => edge.v);
-        parents.forEach(p => g.removeEdge(p, nodeId));
-        (g.outEdges(nodeId) || []).forEach(outboundEdge => {
-          g.removeEdge(outboundEdge.v, outboundEdge.w);
-          // Checking if we have a parent here to handle case where root node is virtual.
-          parents.forEach(p => g.setEdge(p, outboundEdge.w));
+        const phase = this.getPhase(statusMap.get(task['name']))
+        // Add a node for the Task
+        graph.setNode(taskId, {
+          height: Constants.NODE_HEIGHT,
+          icon: statusToIcon(phase),
+          label: task['name'],
+          statusColoring: statusToBgColor(phase, ''),
+          width: Constants.NODE_WIDTH,
         });
-        g.removeNode(nodeId);
       }
-    });
+    }
 
-    return g;
+    return graph
   }
 
-  public static getParameters(workflow?: Workflow): Parameter[] {
-    if (workflow && workflow.spec && workflow.spec.arguments) {
-      return workflow.spec.arguments.parameters || [];
+  public static getPhase(execStatus: any) : NodePhase {
+    return execStatus!.status.conditions[0].reason;
+  }
+
+  public static getParameters(workflow?: any): Parameter[] {
+    if (workflow && workflow.spec && workflow.spec.params) {
+      return workflow.spec.params || [];
     }
+
     return [];
   }
 
@@ -180,7 +203,7 @@ export default class WorkflowParser {
   // inputs/outputs if any, while looking out for any missing link in the chain to
   // the node's inputs/outputs.
   public static getNodeInputOutputParams(
-    workflow?: Workflow,
+    workflow?: any,
     nodeId?: string,
   ): Record<'inputParams' | 'outputParams', Array<KeyValue<string>>> {
     type ParamList = Array<KeyValue<string>>;
@@ -190,19 +213,23 @@ export default class WorkflowParser {
       !nodeId ||
       !workflow ||
       !workflow.status ||
-      !workflow.status.nodes ||
-      !workflow.status.nodes[nodeId]
+      !workflow.status.taskRuns
     ) {
       return { inputParams, outputParams };
     }
 
-    const { inputs, outputs } = workflow.status.nodes[nodeId];
-    if (!!inputs && !!inputs.parameters) {
-      inputParams = inputs.parameters.map(p => [p.name, p.value || '']);
+    for (const taskRunId of Object.getOwnPropertyNames(workflow.status.taskRuns)) {
+      const taskStatus = workflow.status.taskRuns[taskRunId].status;
+      if (taskStatus.podName === nodeId) {
+        inputParams = taskStatus.taskSpec.params
+          ? taskStatus.taskSpec.params.map(({name, value} : any) => [name, value])
+          : inputParams
+        outputParams =  taskStatus.taskResults
+          ? taskStatus.taskResults.map(({name, value} : any) => [name, value])
+          : outputParams
+      }
     }
-    if (!!outputs && !!outputs.parameters) {
-      outputParams = outputs.parameters.map(p => [p.name, p.value || '']);
-    }
+
     return { inputParams, outputParams };
   }
 
@@ -238,25 +265,25 @@ export default class WorkflowParser {
 
   // Makes sure the workflow object contains the node and returns its
   // volume mounts if any.
-  public static getNodeVolumeMounts(workflow: Workflow, nodeId: string): Array<KeyValue<string>> {
+  public static getNodeVolumeMounts(workflow: any, nodeId: string): Array<KeyValue<string>> {
     if (
       !workflow ||
       !workflow.status ||
-      !workflow.status.nodes ||
-      !workflow.status.nodes[nodeId] ||
-      !workflow.spec ||
-      !workflow.spec.templates
+      !workflow.status.taskRuns
     ) {
       return [];
     }
 
-    const node = workflow.status.nodes[nodeId];
-    const tmpl = workflow.spec.templates.find(t => !!t && !!t.name && t.name === node.templateName);
-    let volumeMounts: Array<KeyValue<string>> = [];
-    if (tmpl && tmpl.container && tmpl.container.volumeMounts) {
-      volumeMounts = tmpl.container.volumeMounts.map(v => [v.mountPath, v.name]);
+    // If the matching taskRun for nodeId can be found then return the volumes found in the main step
+    for (const task of Object.getOwnPropertyNames(workflow.status.taskRuns)) {
+      if (workflow.status.taskRuns[task].status.podName === nodeId) {
+        const steps = workflow.status.taskRuns[task].status.taskSpec.steps;
+        for (const step of (steps || []))
+          if (step.name === 'main')
+            return (step.volumeMounts || []).map((volume : any) => [volume.mountPath, volume.name])
+      }
     }
-    return volumeMounts;
+    return []
   }
 
   // Makes sure the workflow object contains the node and returns its
