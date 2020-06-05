@@ -1,8 +1,8 @@
 # Kubeflow Pipelines Backend for Tekton
 
-Kubeflow Pipelines backend for Tekton. This project is a follow-on to [KFP-Tekton Compiler project](https://github.com/kubeflow/kfp-tekton), and will allow to take the compiled Tekton yaml to Kubeflow Pipelines (KFP) engine and run it through KFP API and UI using the SDK
+Kubeflow Pipelines backend for Tekton. This project is a follow-on to [KFP-Tekton Compiler project](https://github.com/kubeflow/kfp-tekton), and allows to take the compiled Tekton yaml to Kubeflow Pipelines (KFP) engine and run it through KFP API and UI using the SDK
 
-This project is in very early development phase. Instructions will be improved as we make more progress with implementation.
+This project is in early development phase.
 
 # Getting Started
 ## Prequisites
@@ -21,20 +21,21 @@ This project is in very early development phase. Instructions will be improved a
     kubectl delete MutatingWebhookConfiguration cache-webhook-kubeflow
     ```
 
-2. Once the old KFP deployment is removed, run the below command to deploy this modified Kubeflow Pipeline version with Tekton backend.
+2. Run the below command to deploy this modified Kubeflow Pipeline version with Tekton backend.
     ```shell
     kubectl apply -k manifests/kustomize/env/platform-agnostic
     ```
 
-    Check the new KFP deployment, it should take about 5 to 10 minutes.
+    Check the KFP deployment, it should take about 5 to 10 minutes.
     ```shell
     kubectl get pods -n kubeflow
     ```
 
-    Now go ahead and access the pipeline in the Kubeflow dashboard. It should be accessible from the istio-ingressgateway which is the
-    `<public_ip>:31380`
+    Now go ahead and access the Kubeflow Pipeline dashboard. If you are using Istio it should be accessible from the istio-ingressgateway, or use your accessible ip address on the cluster if you running it in standalone mode.
+    `<public_ip>:31380/_/pipeline/`
 
-## Development: Building from source code
+## Developer Instructions
+
 ### Prerequites
 1. [NodeJS 12 or above](https://nodejs.org/en/download/)
 2. [Golang 1.13 or above](https://golang.org/dl/)
