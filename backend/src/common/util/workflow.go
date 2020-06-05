@@ -252,27 +252,27 @@ func (w *Workflow) SetCannonicalLabels(name string, nextScheduledEpoch int64, in
 // FindObjectStoreArtifactKeyOrEmpty loops through all node running statuses and look up the first
 // S3 artifact with the specified nodeID and artifactName. Returns empty if nothing is found.
 func (w *Workflow) FindObjectStoreArtifactKeyOrEmpty(nodeID string, artifactName string) string {
-	// TODO: Fix the below code for Tekton to enable artifact support.
+	// TODO: The below artifact keys are only for parameter artifacts. Will need to also implement
+	//       metric and raw input artifacts once we finallized the big data passing in our compiler.
 
-	// if w.Status.Nodes == nil {
-	// 	return ""
-	// }
-	// node, found := w.Status.Nodes[nodeID]
-	// if !found {
-	// 	return ""
-	// }
-	// if node.Outputs == nil || node.Outputs.Artifacts == nil {
-	// 	return ""
-	// }
-	// var s3Key string
-	// for _, artifact := range node.Outputs.Artifacts {
-	// 	if artifact.Name != artifactName || artifact.S3 == nil || artifact.S3.Key == "" {
-	// 		continue
-	// 	}
-	// 	s3Key = artifact.S3.Key
-	// }
-	// return s3Key
-	return ""
+	if w.Status.PipelineRunStatusFields.TaskRuns == nil {
+		return ""
+	}
+	node, found := w.Status.PipelineRunStatusFields.TaskRuns[nodeID]
+	if !found {
+		return ""
+	}
+	if node.Status == nil || node.Status.TaskRunResults == nil {
+		return ""
+	}
+	var s3Key string
+	for _, artifact := range node.Status.TaskRunResults {
+		if artifact.Name != artifactName {
+			continue
+		}
+		s3Key = "artifacts/" + w.ObjectMeta.Name + "/" + nodeID + "/" + artifactName + ".tgz"
+	}
+	return s3Key
 }
 
 // IsInFinalState whether the workflow is in a final state.

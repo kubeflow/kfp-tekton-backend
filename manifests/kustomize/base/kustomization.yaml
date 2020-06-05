@@ -30,6 +30,7 @@ images:
   - name: gcr.io/ml-pipeline/visualization-server
     newTag: 0.5.1
   - name: gcr.io/ml-pipeline/metadata-writer
+    newName: docker.io/aipipeline/metadata-writer
     newTag: 0.5.1
   - name: gcr.io/ml-pipeline/cache-server
     newTag: 0.5.1
