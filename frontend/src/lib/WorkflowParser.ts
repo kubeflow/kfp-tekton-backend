@@ -47,6 +47,10 @@ export default class WorkflowParser {
     graph.setGraph({});
     graph.setDefaultEdgeLabel(() => ({}));
 
+    // If a run exists but has no status is available yet return an empty graph
+    if (workflow && workflow.status && Object.keys(workflow.status).length == 0)
+      return graph
+
     const tasks = workflow['spec']['pipelineSpec']['tasks'];
     const status = workflow['status']['taskRuns'];
     const pipelineParams = workflow['spec']['params'];

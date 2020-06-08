@@ -115,3 +115,13 @@ function wasNodeCached(node: NodeStatus): boolean {
   // (And now there are always some output artifacts since we've enabled log archiving).
   return artifacts.some(artifact => artifact.s3 && !artifact.s3.key.includes(node.id));
 }
+
+export function statusToPhase(nodeStatus: string | undefined): NodePhase {
+  if (!nodeStatus)
+    return 'Unknown' as NodePhase
+  else if (nodeStatus === 'Completed')
+    return 'Succeeded' as NodePhase
+  else if (nodeStatus === 'ConditionCheckFailed')
+    return 'Skipped' as NodePhase
+  return nodeStatus as NodePhase
+}
