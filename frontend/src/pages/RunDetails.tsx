@@ -63,7 +63,7 @@ import CompareUtils from '../lib/CompareUtils';
 import { OutputArtifactLoader } from '../lib/OutputArtifactLoader';
 import RunUtils from '../lib/RunUtils';
 import { KeyValue } from '../lib/StaticGraphParser';
-import { hasFinished, NodePhase } from '../lib/StatusUtils';
+import { hasFinished, NodePhase, statusToPhase } from '../lib/StatusUtils';
 import {
   errorToMessage,
   formatDateString,
@@ -730,7 +730,7 @@ class RunDetails extends Page<RunDetailsInternalProps, RunDetailsState> {
       }
       const pageTitle = (
         <div className={commonCss.flex}>
-          {statusToIcon(runMetadata.status as NodePhase, runDetail.run!.created_at)}
+          {statusToIcon(statusToPhase(runMetadata.status), runDetail.run!.created_at)}
           <span style={{ marginLeft: 10 }}>{runMetadata.name!}</span>
         </div>
       );
