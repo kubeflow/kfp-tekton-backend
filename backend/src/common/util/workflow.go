@@ -278,7 +278,8 @@ func (w *Workflow) FindObjectStoreArtifactKeyOrEmpty(nodeID string, artifactName
 // IsInFinalState whether the workflow is in a final state.
 func (w *Workflow) IsInFinalState() bool {
 	if len(w.Status.Status.Conditions) > 0 {
-		if w.Status.Status.Conditions[0].Reason == "Succeeded" || w.Status.Status.Conditions[0].Reason == "Failed" {
+		phase := w.Status.Status.Conditions[0].Reason
+		if phase == "Succeeded" || phase == "Failed" || phase == "Completed" {
 			return true
 		}
 	}
