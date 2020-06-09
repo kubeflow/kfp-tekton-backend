@@ -1,5 +1,10 @@
 # Tekton KFP Changelog
 
+## Tekton 0.13 release
+- Updated go.mod with the new go-client dependencies
+- Replaced k8s.io/kubernetes to k8s.io/api due to new 1.17 go-client requirements
+- Update persistent agent Docker image to be based on golang 1.13 because go-client 1.17.6 is no longer supported on golang 1.11
+
 ## Initial commit
 
 - \[Backend\] init Tekton backend commit [\#4](https://github.com/kubeflow/kfp-tekton-backend/pull/4)
