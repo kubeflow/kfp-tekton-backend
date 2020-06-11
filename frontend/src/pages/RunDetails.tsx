@@ -63,7 +63,7 @@ import CompareUtils from '../lib/CompareUtils';
 import { OutputArtifactLoader } from '../lib/OutputArtifactLoader';
 import RunUtils from '../lib/RunUtils';
 import { KeyValue } from '../lib/StaticGraphParser';
-import { hasFinished, NodePhase } from '../lib/StatusUtils';
+import { hasFinished, NodePhase, statusToPhase } from '../lib/StatusUtils';
 import {
   errorToMessage,
   formatDateString,
@@ -90,6 +90,7 @@ enum SidePaneTab {
 
 interface SelectedNodeDetails {
   id: string;
+  mode?: Mode;
   logs?: string;
   phaseMessage?: string;
 }
@@ -304,7 +305,7 @@ class RunDetails extends Page<RunDetailsInternalProps, RunDetailsState> {
                         {!!selectedNodeDetails && (
                           <React.Fragment>
                             {!!selectedNodeDetails.phaseMessage && (
-                              <Banner mode='warning' message={selectedNodeDetails.phaseMessage} />
+                              <Banner mode={selectedNodeDetails.mode || 'warning'} message={selectedNodeDetails.phaseMessage} />
                             )}
                             <div className={commonCss.page}>
                               <MD2Tabs
@@ -667,6 +668,12 @@ class RunDetails extends Page<RunDetailsInternalProps, RunDetailsState> {
         runDetail.pipeline_runtime!.workflow_manifest || '{}',
       );
 
+      console.log("run detail")
+      console.log(runDetail)
+
+      console.log("workflow")
+      console.log(workflow)
+
       // Show workflow errors
       const workflowError = WorkflowParser.getWorkflowError(workflow);
       if (workflowError) {
@@ -730,7 +737,7 @@ class RunDetails extends Page<RunDetailsInternalProps, RunDetailsState> {
       }
       const pageTitle = (
         <div className={commonCss.flex}>
-          {statusToIcon(runMetadata.status as NodePhase, runDetail.run!.created_at)}
+          {statusToIcon(statusToPhase(runMetadata.status), runDetail.run!.created_at)}
           <span style={{ marginLeft: 10 }}>{runMetadata.name!}</span>
         </div>
       );
@@ -860,7 +867,8 @@ class RunDetails extends Page<RunDetailsInternalProps, RunDetailsState> {
       let node : any;
 
       for (const podName of Object.getOwnPropertyNames(workflow.status.taskRuns)) {
-        if (workflow.status.taskRuns[podName].status.podName === selectedNodeDetails.id) {
+        if (workflow.status.taskRuns[podName].status.podName === selectedNodeDetails.id
+           || workflow.status.taskRuns[podName].pipelineTaskName === selectedNodeDetails.id) {
           node = workflow.status.taskRuns[podName].status;
         }
       }
@@ -869,6 +877,14 @@ class RunDetails extends Page<RunDetailsInternalProps, RunDetailsState> {
           node && node.status
             ? `This step is in ${node.status.conditions[0].type} state with this message: ` + node.status.conditions[0].message
             : undefined;
+      }
+      else if (node.conditions) {
+        if (node.conditions[0].reason === 'Succeeded') {
+          selectedNodeDetails.mode = 'info';
+          selectedNodeDetails.phaseMessage = 'All ConditionChecks have completed executing'
+        }
+        else
+          selectedNodeDetails.phaseMessage = node.conditions[0].message;
       }
       this.setStateSafe({ selectedNodeDetails, sidepanelSelectedTab: tab });
 
