@@ -48,84 +48,52 @@ export default class WorkflowParser {
     graph.setDefaultEdgeLabel(() => ({}));
 
     // If a run exists but has no status is available yet return an empty graph
-    if (workflow && workflow.status && (Object.keys(workflow.status).length == 0 || !workflow.status.taskRuns))
-      return graph
+    if (
+      workflow &&
+      workflow.status &&
+      (Object.keys(workflow.status).length === 0 || !workflow.status.taskRuns)
+    )
+      return graph;
 
     const tasks = workflow['spec']['pipelineSpec']['tasks'] || [];
     const status = workflow['status']['taskRuns'];
     const pipelineParams = workflow['spec']['params'];
 
-    // Check if there are any metadata annotations describing the relationships between conditions in the graph
-    let condMeta = undefined;
-    if (workflow['metadata'] && workflow['metadata']['annotations'] && workflow['metadata']['annotations']['conditions'])
-      condMeta = workflow['metadata']['annotations']['conditions'];
-
     // Create a map from task name to status for every status received
     const statusMap = new Map<string, any>();
-    for (const taskRunId of Object.getOwnPropertyNames(status)){
+    for (const taskRunId of Object.getOwnPropertyNames(status)) {
       status[taskRunId]['taskRunId'] = taskRunId;
-      statusMap.set(status[taskRunId]['pipelineTaskName'], status[taskRunId]);
-      /*
-      if (status[taskRunId]['conditionChecks']) {
-        for (const conditionId of Object.getOwnPropertyNames(status[taskRunId]['conditionChecks'])) {
-          const condition = status[taskRunId]['conditionChecks'][conditionId];
-          statusMap.set(condition['conditionName'], condition['status']);
-        }
-      }*/
+      if (status[taskRunId]['status'])
+        statusMap.set(status[taskRunId]['pipelineTaskName'], status[taskRunId]);
     }
-    console.log("STATUS MAP")
-    console.log(statusMap)
 
     for (const task of tasks) {
+      // If the task has a status then add it and its edges to the graph
+      if (statusMap.get(task['name'])) {
+        const conditions = task['conditions'] || [];
+        const taskId =
+          statusMap.get(task['name']) && statusMap.get(task['name'])!['status']['podName'] !== ''
+            ? statusMap.get(task['name'])!['status']['podName']
+            : task['name'];
+        const edges = this.checkParams(statusMap, pipelineParams, task, '');
 
-      const conditions = task['conditions'] || [];
-      console.log("TASK")
-      console.log(statusMap.get(task['name']))
-      const taskId = (statusMap.get(task['name']) && statusMap.get(task['name'])! ['status']['podName'] !== "") 
-                     ? statusMap.get(task['name'])! ['status']['podName'] 
-                     : task['name']
-      const edges = this.checkParams(statusMap, pipelineParams, condMeta, task, "")
+        // Add all of this Task's conditional dependencies as Task dependencies
+        for (const condition of conditions)
+          edges.push(...this.checkParams(statusMap, pipelineParams, condition, taskId));
 
-
-      for (const condition of conditions) {
-        const condEdges = this.checkParams(statusMap, pipelineParams, condMeta, condition, taskId);
-
-        // If the condition metadata is available then add it and its edges to the graph
-        if (condMeta) {
-
-          for (const condEdge of (condEdges || []))
-            graph.setEdge(condEdge['parent'], condEdge['child']);
-
-          const phase = this.getPhase(statusMap.get(condition['conditionRef']))
-          // Add a node for the Condition
-          graph.setNode(condition['conditionRef'], {
-            height: Constants.NODE_HEIGHT,
-            icon: statusToIcon(statusToPhase(phase)),
-            label: condition['conditionRef'],
-            statusColoring: statusToBgColor(phase, ''),
-            width: Constants.NODE_WIDTH,
+        if (task['taskSpec']['runAfter']) {
+          task['runAfter'].forEach((parentTask: any) => {
+            if (
+              statusMap.get(parentTask) &&
+              statusMap.get(parentTask)!['status']['conditions'][0]['type'] === 'Succeeded'
+            ) {
+              const parentId = statusMap.get(parentTask)!['status']['podName'];
+              edges.push({ parent: parentId, child: taskId });
+            }
           });
         }
-        // If no condition metadata is available the condition's dependencies are
-        // inherited by the owner task
-        else {
-          edges.push(...condEdges);
-        }
-      }
 
-      if (task['taskSpec']['runAfter']) {
-        task['runAfter'].forEach((parentTask: any)=> {
-          if (statusMap.get(parentTask) && statusMap.get(parentTask)!['status']['conditions'][0]['type'] === 'Succeeded') {
-            const parentId = statusMap.get(parentTask)!['status']['podName'];
-            edges.push({parent: parentId, child: taskId});
-          }
-        });
-      }
-
-      // If the task has a status or is pending then add it and its edges to the graph
-      if (statusMap.get(task['name']) ) {
-        for (const edge of (edges || []))
-          graph.setEdge(edge['parent'], edge['child']);
+        for (const edge of edges || []) graph.setEdge(edge['parent'], edge['child']);
 
         const phase = statusToPhase(this.getPhase(statusMap.get(task['name'])));
         // Add a node for the Task
@@ -139,64 +107,76 @@ export default class WorkflowParser {
       }
     }
 
-    return graph
+    return graph;
   }
 
   private static checkParams(
     statusMap: Map<string, any>,
     pipelineParams: any,
-    condMeta: any,
     component: any,
-    ownerTask: string
-  ): {parent: string, child: string}[] {
-
-    const edges : {parent: string, child: string}[] = [];
-    const componentId = ownerTask !== "" 
-                        ? component['conditionRef']
-                        : (statusMap.get(component['name']) && statusMap.get(component['name'])! ['status']['podName'] !== "") 
-                        ? statusMap.get(component['name'])! ['status']['podName'] 
-                        : component['name']
+    ownerTask: string,
+  ): { parent: string; child: string }[] {
+    const edges: { parent: string; child: string }[] = [];
+    const componentId =
+      ownerTask !== ''
+        ? component['conditionRef']
+        : statusMap.get(component['name']) &&
+          statusMap.get(component['name'])!['status']['podName'] !== ''
+        ? statusMap.get(component['name'])!['status']['podName']
+        : component['name'];
 
     // Adds dependencies from task params
-    for (const param of (component['params'] || [])) {
+    for (const param of component['params'] || []) {
       let paramValue = param['value'] || '';
 
       // If the parameters are passed from the pipeline parameters then grab the value from the pipeline parameters
-      if (param['value'].substring(0,9) === '$(params.' && param['value'].substring(param['value'].length - 1) === ')') {
+      if (
+        param['value'].substring(0, 9) === '$(params.' &&
+        param['value'].substring(param['value'].length - 1) === ')'
+      ) {
         const paramName = param['value'].substring(9, param['value'].length - 1);
         for (const pipelineParam of pipelineParams)
-          if (pipelineParam['name'] === paramName)
-            paramValue = pipelineParam['value'];
+          if (pipelineParam['name'] === paramName) paramValue = pipelineParam['value'];
       }
       // If the parameters are passed from the parent task's results and the task is completed then grab the resulting values
-      else if (param['value'].substring(0, 2) === '$(' && param['value'].substring(param['value'].length - 1) === ')'){
+      else if (
+        param['value'].substring(0, 2) === '$(' &&
+        param['value'].substring(param['value'].length - 1) === ')'
+      ) {
         const paramSplit = param['value'].split('.');
         const parentTask = paramSplit[1];
-        const paramName = paramSplit[paramSplit.length - 1].substring(0, paramSplit[paramSplit.length - 1].length - 1);
+        const paramName = paramSplit[paramSplit.length - 1].substring(
+          0,
+          paramSplit[paramSplit.length - 1].length - 1,
+        );
 
-        if (statusMap.get(parentTask) && statusMap.get(parentTask)!['status']['conditions'][0]['type'] === 'Succeeded') {
+        if (
+          statusMap.get(parentTask) &&
+          statusMap.get(parentTask)!['status']['conditions'][0]['type'] === 'Succeeded'
+        ) {
           const parentId = statusMap.get(parentTask)!['status']['podName'];
-          edges.push({parent: parentId, child: ownerTask === "" ? componentId : ownerTask});
+          edges.push({ parent: parentId, child: ownerTask === '' ? componentId : ownerTask });
 
           // Add the taskResults value to the params value in status
-          for (const result of (statusMap.get(parentTask)!['status']['taskResults'] || [])){
-            if (result['name'] === paramName)
-              paramValue = result['value'];
+          for (const result of statusMap.get(parentTask)!['status']['taskResults'] || []) {
+            if (result['name'] === paramName) paramValue = result['value'];
           }
         }
       }
       // Find the output that matches this input and pull the value
-      if (statusMap.get(component['name']) && statusMap.get(component['name'])['status']['taskSpec']) {
+      if (
+        statusMap.get(component['name']) &&
+        statusMap.get(component['name'])['status']['taskSpec']
+      ) {
         for (const statusParam of statusMap.get(component['name'])!['status']['taskSpec']['params'])
-          if (statusParam['name'] === param['name'])
-            statusParam['value'] = paramValue;
+          if (statusParam['name'] === param['name']) statusParam['value'] = paramValue;
       }
     }
 
     return edges;
   }
 
-  public static getPhase(execStatus: any) : NodePhase {
+  public static getPhase(execStatus: any): NodePhase {
     return execStatus!.status.conditions[0].reason;
   }
 
@@ -218,24 +198,21 @@ export default class WorkflowParser {
     type ParamList = Array<KeyValue<string>>;
     let inputParams: ParamList = [];
     let outputParams: ParamList = [];
-    if (
-      !nodeId ||
-      !workflow ||
-      !workflow.status ||
-      !workflow.status.taskRuns
-    ) {
+    if (!nodeId || !workflow || !workflow.status || !workflow.status.taskRuns) {
       return { inputParams, outputParams };
     }
 
     for (const taskRunId of Object.getOwnPropertyNames(workflow.status.taskRuns)) {
-      const taskStatus = workflow.status.taskRuns[taskRunId].status;
-      if (taskStatus.podName === nodeId) {
-        inputParams = taskStatus.taskSpec.params
-          ? taskStatus.taskSpec.params.map(({name, value} : any) => [name, value])
-          : inputParams
-        outputParams =  taskStatus.taskResults
-          ? taskStatus.taskResults.map(({name, value} : any) => [name, value])
-          : outputParams
+      const taskRun = workflow.status.taskRuns[taskRunId];
+      console.log('Taskrun');
+      console.log(taskRun);
+      if (taskRun.status && taskRun.status.podName === nodeId) {
+        inputParams = taskRun.status.taskSpec.params
+          ? taskRun.status.taskSpec.params.map(({ name, value }: any) => [name, value])
+          : inputParams;
+        outputParams = taskRun.status.taskResults
+          ? taskRun.status.taskResults.map(({ name, value }: any) => [name, value])
+          : outputParams;
       }
     }
 
@@ -275,24 +252,21 @@ export default class WorkflowParser {
   // Makes sure the workflow object contains the node and returns its
   // volume mounts if any.
   public static getNodeVolumeMounts(workflow: any, nodeId: string): Array<KeyValue<string>> {
-    if (
-      !workflow ||
-      !workflow.status ||
-      !workflow.status.taskRuns
-    ) {
+    if (!workflow || !workflow.status || !workflow.status.taskRuns) {
       return [];
     }
 
     // If the matching taskRun for nodeId can be found then return the volumes found in the main step
     for (const task of Object.getOwnPropertyNames(workflow.status.taskRuns)) {
-      if (workflow.status.taskRuns[task].status.podName === nodeId) {
+      const taskRun = workflow.status.taskRuns[task];
+      if (taskRun.status && taskRun.status.podName === nodeId) {
         const steps = workflow.status.taskRuns[task].status.taskSpec.steps;
-        for (const step of (steps || []))
+        for (const step of steps || [])
           if (step.name === 'main')
-            return (step.volumeMounts || []).map((volume : any) => [volume.mountPath, volume.name])
+            return (step.volumeMounts || []).map((volume: any) => [volume.mountPath, volume.name]);
       }
     }
-    return []
+    return [];
   }
 
   // Makes sure the workflow object contains the node and returns its

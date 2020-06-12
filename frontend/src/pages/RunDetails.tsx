@@ -29,10 +29,7 @@ import {
   getTfxRunContext,
 } from 'src/lib/MlmdUtils';
 import { classes, stylesheet } from 'typestyle';
-import {
-  NodePhase as ArgoNodePhase,
-  NodeStatus,
-} from '../../third_party/argo-ui/argo_template';
+import { NodePhase as ArgoNodePhase, NodeStatus } from '../../third_party/argo-ui/argo_template';
 import { ApiExperiment } from '../apis/experiment';
 import { ApiRun, RunStorageState } from '../apis/run';
 import { ApiVisualization, ApiVisualizationType } from '../apis/visualization';
@@ -305,7 +302,10 @@ class RunDetails extends Page<RunDetailsInternalProps, RunDetailsState> {
                         {!!selectedNodeDetails && (
                           <React.Fragment>
                             {!!selectedNodeDetails.phaseMessage && (
-                              <Banner mode={selectedNodeDetails.mode || 'warning'} message={selectedNodeDetails.phaseMessage} />
+                              <Banner
+                                mode={selectedNodeDetails.mode || 'warning'}
+                                message={selectedNodeDetails.phaseMessage}
+                              />
                             )}
                             <div className={commonCss.page}>
                               <MD2Tabs
@@ -326,9 +326,9 @@ class RunDetails extends Page<RunDetailsInternalProps, RunDetailsState> {
                                 selectedTab={sidepanelSelectedTab}
                                 onSwitch={(panelTab: number) => {
                                   this.setStateSafe({
-                                    sidepanelSelectedTab: panelTab
-                                  })
-                                  this._loadSidePaneTab(panelTab)
+                                    sidepanelSelectedTab: panelTab,
+                                  });
+                                  this._loadSidePaneTab(panelTab);
                                 }}
                               />
 
@@ -337,7 +337,8 @@ class RunDetails extends Page<RunDetailsInternalProps, RunDetailsState> {
                                 className={commonCss.page}
                               >
                                 {/* Visualizations need work before being added back */}
-                                { false && sidepanelSelectedTab === SidePaneTab.VISUALIZATIONS &&
+                                {false &&
+                                  sidepanelSelectedTab === SidePaneTab.VISUALIZATIONS &&
                                   this.state.selectedNodeDetails &&
                                   this.state.workflow && (
                                     <VisualizationsTabContent
@@ -664,15 +665,13 @@ class RunDetails extends Page<RunDetailsInternalProps, RunDetailsState> {
         runFinished = true;
       }
 
-      const workflow = JSON.parse(
-        runDetail.pipeline_runtime!.workflow_manifest || '{}',
-      );
+      const workflow = JSON.parse(runDetail.pipeline_runtime!.workflow_manifest || '{}');
 
-      console.log("run detail")
-      console.log(runDetail)
+      console.log('run detail');
+      console.log(runDetail);
 
-      console.log("workflow")
-      console.log(workflow)
+      console.log('workflow');
+      console.log(workflow);
 
       // Show workflow errors
       const workflowError = WorkflowParser.getWorkflowError(workflow);
@@ -712,7 +711,7 @@ class RunDetails extends Page<RunDetailsInternalProps, RunDetailsState> {
       }
 
       let templateString = workflow;
-      const graph = WorkflowParser.createRuntimeGraph(templateString)
+      const graph = WorkflowParser.createRuntimeGraph(templateString);
 
       const breadcrumbs: Array<{ displayName: string; href: string }> = [];
       // If this is an archived run, only show Archive in breadcrumbs, otherwise show
@@ -863,28 +862,29 @@ class RunDetails extends Page<RunDetailsInternalProps, RunDetailsState> {
     const workflow = this.state.workflow;
     const selectedNodeDetails = this.state.selectedNodeDetails;
     if (workflow && workflow.status && workflow.status && selectedNodeDetails) {
-
-      let node : any;
+      let node: any;
 
       for (const podName of Object.getOwnPropertyNames(workflow.status.taskRuns)) {
-        if (workflow.status.taskRuns[podName].status.podName === selectedNodeDetails.id
-           || workflow.status.taskRuns[podName].pipelineTaskName === selectedNodeDetails.id) {
+        const taskRun = workflow.status.taskRuns[podName];
+        if (
+          taskRun.status &&
+          (taskRun.status.podName === selectedNodeDetails.id ||
+            taskRun.pipelineTaskName === selectedNodeDetails.id)
+        ) {
           node = workflow.status.taskRuns[podName].status;
         }
       }
       if (node && node.conditions[0].type !== 'Succeeded') {
         selectedNodeDetails.phaseMessage =
           node && node.status
-            ? `This step is in ${node.status.conditions[0].type} state with this message: ` + node.status.conditions[0].message
+            ? `This step is in ${node.status.conditions[0].type} state with this message: ` +
+              node.status.conditions[0].message
             : undefined;
-      }
-      else if (node.conditions) {
+      } else if (node.conditions) {
         if (node.conditions[0].reason === 'Succeeded') {
           selectedNodeDetails.mode = 'info';
-          selectedNodeDetails.phaseMessage = 'All ConditionChecks have completed executing'
-        }
-        else
-          selectedNodeDetails.phaseMessage = node.conditions[0].message;
+          selectedNodeDetails.phaseMessage = 'All ConditionChecks have completed executing';
+        } else selectedNodeDetails.phaseMessage = node.conditions[0].message;
       }
       this.setStateSafe({ selectedNodeDetails, sidepanelSelectedTab: tab });
 
