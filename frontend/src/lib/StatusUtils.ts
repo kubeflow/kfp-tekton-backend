@@ -34,8 +34,11 @@ export enum NodePhase {
   RUNNING = 'Running',
   SKIPPED = 'Skipped',
   SUCCEEDED = 'Succeeded',
+  COMPLETED = 'Completed',
   CACHED = 'Cached',
   TERMINATING = 'Terminating',
+  PIPELINERUNTIMEOUT = 'PipelineRunTimeout',
+  COULDNTGETCONDITION = 'CouldntGetCondition',
   TERMINATED = 'Terminated',
   UNKNOWN = 'Unknown',
 }

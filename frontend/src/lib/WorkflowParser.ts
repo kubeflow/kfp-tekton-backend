@@ -204,8 +204,6 @@ export default class WorkflowParser {
 
     for (const taskRunId of Object.getOwnPropertyNames(workflow.status.taskRuns)) {
       const taskRun = workflow.status.taskRuns[taskRunId];
-      console.log('Taskrun');
-      console.log(taskRun);
       if (taskRun.status && taskRun.status.podName === nodeId) {
         inputParams = taskRun.status.taskSpec.params
           ? taskRun.status.taskSpec.params.map(({ name, value }: any) => [name, value])

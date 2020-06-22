@@ -667,12 +667,6 @@ class RunDetails extends Page<RunDetailsInternalProps, RunDetailsState> {
 
       const workflow = JSON.parse(runDetail.pipeline_runtime!.workflow_manifest || '{}');
 
-      console.log('run detail');
-      console.log(runDetail);
-
-      console.log('workflow');
-      console.log(workflow);
-
       // Show workflow errors
       const workflowError = WorkflowParser.getWorkflowError(workflow);
       if (workflowError) {
@@ -871,26 +865,27 @@ class RunDetails extends Page<RunDetailsInternalProps, RunDetailsState> {
           (taskRun.status.podName === selectedNodeDetails.id ||
             taskRun.pipelineTaskName === selectedNodeDetails.id)
         ) {
-          node = workflow.status.taskRuns[podName].status;
+          node = workflow.status.taskRuns[podName];
         }
       }
-      if (node && node.conditions[0].type !== 'Succeeded') {
+
+      if (node && node.status && node.status.conditions[0].type !== 'Succeeded') {
         selectedNodeDetails.phaseMessage =
           node && node.status
             ? `This step is in ${node.status.conditions[0].type} state with this message: ` +
               node.status.conditions[0].message
             : undefined;
-      } else if (node.conditions) {
-        if (node.conditions[0].reason === 'Succeeded') {
+      } else if (node && node.status && node.status.conditions && node.conditionChecks) {
+        if (node.status.conditions[0].reason === 'Succeeded') {
           selectedNodeDetails.mode = 'info';
           selectedNodeDetails.phaseMessage = 'All ConditionChecks have completed executing';
-        } else selectedNodeDetails.phaseMessage = node.conditions[0].message;
+        } else selectedNodeDetails.phaseMessage = node.status.conditions[0].message;
       }
       this.setStateSafe({ selectedNodeDetails, sidepanelSelectedTab: tab });
 
       switch (tab) {
         case SidePaneTab.LOGS:
-          if (node.phase !== NodePhase.SKIPPED) {
+          if (node.status.phase !== NodePhase.SKIPPED) {
             await this._loadSelectedNodeLogs();
           } else {
             // Clear logs
