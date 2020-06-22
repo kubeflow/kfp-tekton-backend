@@ -48,28 +48,29 @@ export class SelectedNodeInfo {
   }
 }
 
-export function _populateInfoFromTask(
-  info: SelectedNodeInfo,
-  task?: any,
-): SelectedNodeInfo {
-
+export function _populateInfoFromTask(info: SelectedNodeInfo, task?: any): SelectedNodeInfo {
   if (!task) {
     return info;
   }
 
   info.nodeType = 'container';
-  if (task['taskSpec'] && task['taskSpec']['steps']){
-    const steps = task['taskSpec']['steps']
+  if (task['taskSpec'] && task['taskSpec']['steps']) {
+    const steps = task['taskSpec']['steps'];
     info.args = steps[0]['args'] || [];
     info.command = steps[0]['command'] || [];
     info.image = steps[0]['image'] || [];
-    info.volumeMounts = (steps[0]['volumeMounts'] || []).map((volume: any) => [volume.mountPath, volume.name])
+    info.volumeMounts = (steps[0]['volumeMounts'] || []).map((volume: any) => [
+      volume.mountPath,
+      volume.name,
+    ]);
   }
 
   if (task['taskSpec'] && task['taskSpec']['params'])
     info.inputs = (task['taskSpec']['params'] || []).map((p: any) => [p['name'], p['value'] || '']);
   if (task['taskSpec']['results'])
-    info.outputs = (task['taskSpec']['results'] || []).map((p: any) => {return [p['name'], p['description'] || '']});
+    info.outputs = (task['taskSpec']['results'] || []).map((p: any) => {
+      return [p['name'], p['description'] || ''];
+    });
 
   return info;
 }
@@ -83,63 +84,50 @@ export function createGraph(workflow: any): dagre.graphlib.Graph {
   return graph;
 }
 
-function buildTektonDag(
-  graph: dagre.graphlib.Graph,
-  template: any
-  ): void {
+function buildTektonDag(graph: dagre.graphlib.Graph, template: any): void {
+  const pipeline = template;
+  const tasks = pipeline['spec']['pipelineSpec']['tasks'];
 
-  const pipeline = template
-  const tasks = pipeline['spec']['pipelineSpec']['tasks']
-
-  for (const task of tasks){
-
+  for (const task of tasks) {
     const taskName = task['name'];
 
     // Checks for dependencies mentioned in the runAfter section of a task and then checks for dependencies based
     // on task output being passed in as parameters
     if (task['runAfter'])
-      task['runAfter'].forEach((depTask: any)=> {
-        graph.setEdge(depTask, taskName)
+      task['runAfter'].forEach((depTask: any) => {
+        graph.setEdge(depTask, taskName);
       });
 
     // Adds any dependencies that arise from Conditions and tracks these dependencies to make sure they aren't duplicated in the case that
     // the Condition and the base task use output from the same dependency
-    for (const condition of (task['conditions'] || [])){
-      for (const condParam of (condition['params'] || [])) {
-
-        if (condParam['value'].substring(0, 8) === '$(tasks.' && condParam['value'].substring(condParam['value'].length - 1) === ')') {
+    for (const condition of task['conditions'] || []) {
+      for (const condParam of condition['params'] || []) {
+        if (
+          condParam['value'].substring(0, 8) === '$(tasks.' &&
+          condParam['value'].substring(condParam['value'].length - 1) === ')'
+        ) {
           const paramSplit = condParam['value'].split('.');
           const parentTask = paramSplit[1];
 
-          graph.setEdge(parentTask, condition['conditionRef'])
-          graph.setEdge(condition['conditionRef'], taskName)
-
-          const condInfo = new SelectedNodeInfo();
-          _populateInfoFromTask(condInfo, task)
-
-          // Add a node for the Condition itself
-          graph.setNode(condition['conditionRef'], {
-            bgColor: task.when ? 'cornsilk' : undefined,
-            height: Constants.NODE_HEIGHT,
-            condInfo,
-            label: condition['conditionRef'],
-            width: Constants.NODE_WIDTH,
-          })
+          graph.setEdge(parentTask, taskName);
         }
       }
     }
 
-    for (const param of (task['params'] || [])) {
-      if (param['value'].substring(0, 8) === '$(tasks.' && param['value'].substring(param['value'].length - 1) === ')') {
+    for (const param of task['params'] || []) {
+      if (
+        param['value'].substring(0, 8) === '$(tasks.' &&
+        param['value'].substring(param['value'].length - 1) === ')'
+      ) {
         const paramSplit = param['value'].split('.');
         const parentTask = paramSplit[1];
-        graph.setEdge(parentTask, taskName)
+        graph.setEdge(parentTask, taskName);
       }
     }
 
     // Add the info for this node
     const info = new SelectedNodeInfo();
-    _populateInfoFromTask(info, task)
+    _populateInfoFromTask(info, task);
 
     graph.setNode(taskName, {
       bgColor: task.when ? 'cornsilk' : undefined,
@@ -147,6 +135,6 @@ function buildTektonDag(
       info,
       label: taskName,
       width: Constants.NODE_WIDTH,
-    })
+    });
   }
 }

@@ -95,7 +95,13 @@ function getDuration(start: Date, end: Date): string {
 }
 
 export function getRunDuration(run?: any): string {
-  if (!run || !run.status || !run.status.startTime || !run.status.completionTime || !hasFinished(run.status.condition[0].reason as NodePhase)) {
+  if (
+    !run ||
+    !run.status ||
+    !run.status.startTime ||
+    !run.status.completionTime ||
+    !hasFinished(run.status.condition[0].reason as NodePhase)
+  ) {
     return '-';
   }
 
@@ -106,7 +112,12 @@ export function getRunDuration(run?: any): string {
 }
 
 export function getRunDurationFromWorkflow(workflow?: any): string {
-  if (!workflow || !workflow.status || !workflow.status.startTime || !workflow.status.completionTime) {
+  if (
+    !workflow ||
+    !workflow.status ||
+    !workflow.status.startTime ||
+    !workflow.status.completionTime
+  ) {
     return '-';
   }
 
