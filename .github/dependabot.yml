@@ -1,0 +1,1496 @@
+updates:
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: components/local/base
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: components/local/roc
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: components/local/confusion_matrix
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: components/arena/docker
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: components/aws/emr
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: components/aws/sagemaker
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: components/aws/sagemaker/tests/unit_tests
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: components/aws/athena
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: components/kubeflow/deployer
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: components/kubeflow/katib-launcher
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: components/kubeflow/launcher
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: components/kubeflow/dnntrainer
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: components/kubeflow/kfserving
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: components/ibm-components/ffdl/serve
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: components/ibm-components/ffdl/train
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: components/ibm-components/watson/deploy
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: components/ibm-components/watson/store
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: components/ibm-components/watson/manage/subscribe
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: components/ibm-components/watson/manage/monitor_quality
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: components/ibm-components/watson/manage/monitor_fairness
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: components/ibm-components/watson/train
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: components/ibm-components/spark/data_preprocess_spark
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: components/ibm-components/spark/train_spark
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: components/ibm-components/spark/store_spark_model
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: components/ibm-components/commons/config
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: components/presto/query
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: components/gcp/container
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: components/sample/keras/train_classifier
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: samples/contrib/nvidia-resnet/components/webapp
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: samples/contrib/nvidia-resnet/components/webapp_launcher
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: samples/contrib/nvidia-resnet/components/inference_server_launcher
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: samples/contrib/nvidia-resnet/components/preprocess
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: samples/contrib/nvidia-resnet/components/train
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: samples/contrib/nvidia-resnet/pipeline
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: samples/contrib/image-captioning-gcp/src
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: samples/contrib/versioned-pipeline-ci-samples/mnist-ci-sample/tensorboard
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: samples/contrib/versioned-pipeline-ci-samples/mnist-ci-sample/train
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: samples/contrib/versioned-pipeline-ci-samples/helloworld-ci-sample/helloworld
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: samples/contrib/versioned-pipeline-ci-samples/kaggle-ci-sample/submit_result
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: samples/contrib/versioned-pipeline-ci-samples/kaggle-ci-sample/download_dataset
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: samples/contrib/versioned-pipeline-ci-samples/kaggle-ci-sample/visualize_html
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: samples/contrib/versioned-pipeline-ci-samples/kaggle-ci-sample/visualize_table
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: samples/contrib/versioned-pipeline-ci-samples/kaggle-ci-sample/train_model
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: frontend
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: contrib/components/openvino/predict/containers
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: contrib/components/openvino/model_convert/containers
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: contrib/components/openvino/tf-slim/containers
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: contrib/components/openvino/ovms-deployer/containers
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: tools/bazel_builder
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: third_party/minio
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: third_party/argo
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: third_party/metadata_envoy
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: manifests/gcp_marketplace/deployer
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: backend
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: backend/metadata_writer
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: backend/src/cache/deployer
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: test/initialization-test
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: test/sample-test
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: test/imagebuilder
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: test/frontend-integration-test
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: test/frontend-integration-test/selenium-standalone-chrome-gcloud-nodejs.Docker
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: test/images
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: test/api-integration-test
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: proxy
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: frontend
+  open-pull-requests-limit: 10
+  package-ecosystem: npm
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: frontend/server
+  open-pull-requests-limit: 10
+  package-ecosystem: npm
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: frontend/mock-backend
+  open-pull-requests-limit: 10
+  package-ecosystem: npm
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: test/frontend-integration-test
+  open-pull-requests-limit: 10
+  package-ecosystem: npm
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: components/arena/docker
+  open-pull-requests-limit: 10
+  package-ecosystem: pip
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: components/aws/sagemaker/tests/unit_tests
+  open-pull-requests-limit: 10
+  package-ecosystem: pip
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: components/gcp/container/component_sdk/python
+  open-pull-requests-limit: 10
+  package-ecosystem: pip
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: samples/core/ai_platform/training
+  open-pull-requests-limit: 10
+  package-ecosystem: pip
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: samples/core/container_build
+  open-pull-requests-limit: 10
+  package-ecosystem: pip
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: samples/contrib/azure-samples/databricks-pipelines
+  open-pull-requests-limit: 10
+  package-ecosystem: pip
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: samples/contrib/ibm-samples/ffdl-seldon/source/seldon-pytorch-serving-image
+  open-pull-requests-limit: 10
+  package-ecosystem: pip
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: contrib/components/openvino/predict/containers
+  open-pull-requests-limit: 10
+  package-ecosystem: pip
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: contrib/components/openvino/ovms-deployer/containers
+  open-pull-requests-limit: 10
+  package-ecosystem: pip
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: sdk/python
+  open-pull-requests-limit: 10
+  package-ecosystem: pip
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: backend
+  open-pull-requests-limit: 10
+  package-ecosystem: pip
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: backend/metadata_writer
+  open-pull-requests-limit: 10
+  package-ecosystem: pip
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: backend/src/apiserver/visualization
+  open-pull-requests-limit: 10
+  package-ecosystem: pip
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: test/sample-test
+  open-pull-requests-limit: 10
+  package-ecosystem: pip
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+- assignees:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  directory: .
+  open-pull-requests-limit: 10
+  package-ecosystem: gomod
+  reviewers:
+  - animeshsingh
+  - ckadner
+  - Tomcli
+  - afrittoli
+  - jinchihe
+  - fenglixa
+  - drewbutlerbb4
+  - kevinyu98
+  schedule:
+    interval: daily
+version: 2
